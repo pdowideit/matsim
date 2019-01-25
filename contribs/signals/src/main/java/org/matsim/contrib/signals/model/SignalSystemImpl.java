@@ -111,6 +111,8 @@ public class SignalSystemImpl implements SignalSystem {
 
 	@Override
 	public void simulationInitialized(double simStartTimeSeconds) {
+		this.sortedRequests.clear();
+		this.requests.clear();
 		this.signalController.simulationInitialized(simStartTimeSeconds);
 	}
 

@@ -154,7 +154,11 @@ public class DefaultPlanbasedSignalSystemController extends AbstractSignalContro
 	}
 
 	@Override
-	public void simulationInitialized(double simStartTime) {		
+	public void simulationInitialized(double simStartTime) {
+		// initialize fields for the next iteration
+		activePlan = null;
+		nextActivePlanCheckTime = 0;
+		
 		// store all plans in a queue, sort them according to their end times and validate them
 		this.planQueue = new LinkedList<SignalPlan>(this.signalPlans.values());
 		Collections.sort(planQueue, new SignalPlanEndTimeComparator(simStartTime));
