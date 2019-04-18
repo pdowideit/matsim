@@ -91,7 +91,6 @@ public final class SylviaSignalController extends AbstractSignalController imple
 		this.sylviaConfig = ConfigUtils.addOrGetModule(scenario.getConfig(), SylviaConfigGroup.class);
 		this.sensorManager = sensorManager;
 		this.downstreamSensor = downstreamSensor;
-		this.init();
 	}
 	
 	private void init() {
