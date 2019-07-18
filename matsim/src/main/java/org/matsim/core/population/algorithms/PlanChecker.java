@@ -52,10 +52,10 @@ public class PlanChecker implements PlanAlgorithm {
 	public void run(Plan plan) {
 		PlanElementType lastPlanElementType;
 		
-		if (plan.getPlanElements().size() < 3) {
+		if (plan.getPlanElements().size() < 1) {
 			// TODO: Is a plan with 0 or 1 plan elements valid?
 			log.error(
-					"Invalid plan: Less than 3 PlanElements!\n"
+					"Invalid plan: 0 PlanElements!\n"
 							+ createDetailedErrorMessage(plan));
 			throw new RuntimeException("Invalid Plan");
 		}
@@ -72,6 +72,11 @@ public class PlanChecker implements PlanAlgorithm {
 		}
 		PlanElement pe;
 
+		if (plan.getPlanElements().size() == 1) {
+			// there is nothing else we could check
+			return;
+		}
+		
 		// Check that after a Leg only an Activity can follow and after an Activity only a Leg can follow 
 		for (int i = 1; i < plan.getPlanElements().size(); i++) {
 			pe = plan.getPlanElements().get(i);
@@ -113,10 +118,10 @@ public class PlanChecker implements PlanAlgorithm {
 		strBuild.append(description);
 		strBuild.append("\nInvalid plan: ");
 		strBuild.append(plan.toString());
-		strBuild.append("\nPlanElements: ");
+		strBuild.append("\nPlanElements: \n\t");
 		for (PlanElement pe : plan.getPlanElements()) {
 			strBuild.append(pe.toString());
-			strBuild.append(", ");
+			strBuild.append("\n\t");
 		}
 		return strBuild.toString();
 	}
