@@ -25,6 +25,7 @@ import org.matsim.core.config.groups.PlansConfigGroup;
 import org.matsim.core.config.groups.TimeAllocationMutatorConfigGroup;
 import org.matsim.core.replanning.PlanStrategy;
 import org.matsim.core.replanning.PlanStrategyImpl;
+import org.matsim.core.replanning.modules.PlanChecker;
 import org.matsim.core.replanning.modules.ReRoute;
 import org.matsim.core.replanning.selectors.RandomPlanSelector;
 import org.matsim.core.router.TripRouter;
@@ -47,8 +48,11 @@ public class TimeAllocationMutatorReRoute implements Provider<PlanStrategy> {
     @Override
 	public PlanStrategy get() {
 		final PlanStrategyImpl strategy = new PlanStrategyImpl(new RandomPlanSelector());
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after PlanSelector"));
 		strategy.addStrategyModule(new TimeAllocationMutatorModule(this.tripRouterProvider, this.plansConfigGroup, this.timeAllocationMutatorConfigGroup, this.globalConfigGroup, this.population) );
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after TimeAllocationMutatorModule"));
 		strategy.addStrategyModule(new ReRoute(this.activityFacilities, this.tripRouterProvider, this.globalConfigGroup));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after ReRoute"));
 		return strategy;
 	}
 }

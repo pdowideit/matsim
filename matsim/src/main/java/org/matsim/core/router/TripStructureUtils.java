@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
@@ -47,6 +49,8 @@ import org.matsim.core.gbl.Gbl;
  * @author thibautd
  */
 public class TripStructureUtils {
+	
+	private static final Logger LOGGER = Logger.getLogger( TripStructureUtils.class );
 
 	private TripStructureUtils() {}
 
@@ -200,6 +204,13 @@ public class TripStructureUtils {
 					}
 
 					if (destinationId != null && !originId.equals( destinationId )) {
+						
+						LOGGER.error("unconsistent trip location sequence: "+destinationId+" != "+originId);
+						LOGGER.error("trip is :" + trip.toString());
+						for (PlanElement pe: planElements) {
+							LOGGER.error(pe.toString());
+						}
+						
 						throw new RuntimeException( "unconsistent trip location sequence: "+destinationId+" != "+originId );
 					}
 

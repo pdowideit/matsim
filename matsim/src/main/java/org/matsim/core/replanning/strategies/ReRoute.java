@@ -25,6 +25,7 @@ import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.replanning.PlanStrategy;
 import org.matsim.core.replanning.PlanStrategyImpl;
 import org.matsim.core.replanning.PlanStrategyImpl.Builder;
+import org.matsim.core.replanning.modules.PlanChecker;
 import org.matsim.core.replanning.selectors.RandomPlanSelector;
 import org.matsim.core.router.TripRouter;
 import org.matsim.facilities.ActivityFacilities;
@@ -41,7 +42,9 @@ public class ReRoute implements Provider<PlanStrategy> {
 	@Override
 	public PlanStrategy get() {
 		Builder builder = new PlanStrategyImpl.Builder(new RandomPlanSelector<Plan,Person>()) ;
+		builder.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy ReRoute after PlanSelector"));
 		builder.addStrategyModule(new org.matsim.core.replanning.modules.ReRoute(facilities, tripRouterProvider, globalConfigGroup));
+		builder.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy ReRoute after ReRoute"));
 		return builder.build() ;
 	}
 
