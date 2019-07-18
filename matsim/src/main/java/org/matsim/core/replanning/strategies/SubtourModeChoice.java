@@ -42,11 +42,11 @@ public class SubtourModeChoice implements Provider<PlanStrategy> {
     @Override
 	public PlanStrategy get() {
 		PlanStrategyImpl strategy = new PlanStrategyImpl(new RandomPlanSelector());
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after PlanSelector"));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step PlanSelector"));
 		strategy.addStrategyModule(new org.matsim.core.replanning.modules.SubtourModeChoice(tripRouterProvider, globalConfigGroup, subtourModeChoiceConfigGroup));
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after SubtourModeChoice"));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step SubtourModeChoice"));
 		strategy.addStrategyModule(new ReRoute(facilities, tripRouterProvider, globalConfigGroup));
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after ReRoute"));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step ReRoute"));
 		return strategy;
 	}
 

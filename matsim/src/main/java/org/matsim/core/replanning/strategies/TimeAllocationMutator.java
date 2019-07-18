@@ -42,11 +42,11 @@ public class TimeAllocationMutator implements Provider<PlanStrategy> {
 	@Override
 	public PlanStrategy get() {
 		PlanStrategyImpl strategy = new PlanStrategyImpl(new RandomPlanSelector());
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutator after PlanSelector"));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutator after Step PlanSelector"));
 		TimeAllocationMutatorModule tam = new TimeAllocationMutatorModule(this.tripRouterProvider,
 				this.plansConfigGroup, this.timeAllocationMutatorConfigGroup, this.globalConfigGroup, population);
 		strategy.addStrategyModule(tam);
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutator after TimeAllocationMutator"));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutator after Step TimeAllocationMutator"));
 		return strategy;
 	}
 }

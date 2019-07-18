@@ -48,11 +48,11 @@ public class TimeAllocationMutatorReRoute implements Provider<PlanStrategy> {
     @Override
 	public PlanStrategy get() {
 		final PlanStrategyImpl strategy = new PlanStrategyImpl(new RandomPlanSelector());
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after PlanSelector"));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step PlanSelector"));
 		strategy.addStrategyModule(new TimeAllocationMutatorModule(this.tripRouterProvider, this.plansConfigGroup, this.timeAllocationMutatorConfigGroup, this.globalConfigGroup, this.population) );
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after TimeAllocationMutatorModule"));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step TimeAllocationMutatorModule"));
 		strategy.addStrategyModule(new ReRoute(this.activityFacilities, this.tripRouterProvider, this.globalConfigGroup));
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after ReRoute"));
+		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step ReRoute"));
 		return strategy;
 	}
 }
