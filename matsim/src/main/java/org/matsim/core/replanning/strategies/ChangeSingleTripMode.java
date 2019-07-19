@@ -20,10 +20,13 @@
 package org.matsim.core.replanning.strategies;
 
 import org.matsim.core.config.groups.ChangeModeConfigGroup;
+import org.matsim.core.config.groups.ControlerConfigGroup;
 import org.matsim.core.config.groups.GlobalConfigGroup;
+import org.matsim.core.config.groups.ControlerConfigGroup.PlanCheckerLevel;
 import org.matsim.core.replanning.PlanStrategy;
 import org.matsim.core.replanning.PlanStrategyImpl;
 import org.matsim.core.replanning.modules.ChangeSingleLegMode;
+import org.matsim.core.replanning.modules.PlanChecker;
 import org.matsim.core.replanning.modules.ReRoute;
 import org.matsim.core.replanning.modules.TripsToLegsModule;
 import org.matsim.core.replanning.selectors.RandomPlanSelector;
@@ -35,13 +38,17 @@ import javax.inject.Provider;
 
 public class ChangeSingleTripMode implements Provider<PlanStrategy> {
 
+	private final ControlerConfigGroup controlerConfigGroup;
 	private final GlobalConfigGroup globalConfigGroup;
 	private final ChangeModeConfigGroup changeLegModeConfigGroup;
 	private Provider<TripRouter> tripRouterProvider;
 	private ActivityFacilities activityFacilities;
 
 	@Inject
-	ChangeSingleTripMode(GlobalConfigGroup globalConfigGroup, ChangeModeConfigGroup changeLegModeConfigGroup, ActivityFacilities activityFacilities, Provider<TripRouter> tripRouterProvider) {
+	ChangeSingleTripMode(ControlerConfigGroup controlerConfigGroup, GlobalConfigGroup globalConfigGroup,
+			ChangeModeConfigGroup changeLegModeConfigGroup, ActivityFacilities activityFacilities,
+			Provider<TripRouter> tripRouterProvider) {
+		this.controlerConfigGroup = controlerConfigGroup;
 		this.globalConfigGroup = globalConfigGroup;
 		this.changeLegModeConfigGroup = changeLegModeConfigGroup;
 		this.activityFacilities = activityFacilities;
@@ -51,10 +58,22 @@ public class ChangeSingleTripMode implements Provider<PlanStrategy> {
     @Override
 	public PlanStrategy get() {
 		PlanStrategyImpl.Builder builder = new PlanStrategyImpl.Builder(new RandomPlanSelector<>());
-
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION)) {
+			builder.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy ChangeSingleTripMode after Step PlanSelector"));
+		}
 		builder.addStrategyModule(new TripsToLegsModule(tripRouterProvider, globalConfigGroup));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION)) {
+			builder.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy ChangeSingleTripMode after Step TripsToLegsModule"));
+		}
 		builder.addStrategyModule(new ChangeSingleLegMode(globalConfigGroup, changeLegModeConfigGroup));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION)) {
+			builder.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy ChangeSingleTripMode after Step ChangeSingleLegMode"));
+		}
 		builder.addStrategyModule(new ReRoute(activityFacilities, tripRouterProvider, globalConfigGroup));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION) ||
+				controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.MEDIUM)) {
+			builder.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy ChangeSingleTripMode after Step ReRoute"));
+		}
 		return builder.build();
 	}
 

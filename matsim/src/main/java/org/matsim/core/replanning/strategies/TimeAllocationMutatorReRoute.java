@@ -20,9 +20,11 @@
 package org.matsim.core.replanning.strategies;
 
 import org.matsim.api.core.v01.population.Population;
+import org.matsim.core.config.groups.ControlerConfigGroup;
 import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.config.groups.PlansConfigGroup;
 import org.matsim.core.config.groups.TimeAllocationMutatorConfigGroup;
+import org.matsim.core.config.groups.ControlerConfigGroup.PlanCheckerLevel;
 import org.matsim.core.replanning.PlanStrategy;
 import org.matsim.core.replanning.PlanStrategyImpl;
 import org.matsim.core.replanning.modules.PlanChecker;
@@ -39,6 +41,7 @@ import javax.inject.Provider;
  */
 public class TimeAllocationMutatorReRoute implements Provider<PlanStrategy> {
 	@Inject private Provider<TripRouter> tripRouterProvider;
+	@Inject private ControlerConfigGroup controlerConfigGroup;
 	@Inject private GlobalConfigGroup globalConfigGroup;
 	@Inject private TimeAllocationMutatorConfigGroup timeAllocationMutatorConfigGroup;
 	@Inject private PlansConfigGroup plansConfigGroup;
@@ -48,11 +51,18 @@ public class TimeAllocationMutatorReRoute implements Provider<PlanStrategy> {
     @Override
 	public PlanStrategy get() {
 		final PlanStrategyImpl strategy = new PlanStrategyImpl(new RandomPlanSelector());
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step PlanSelector"));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION)) {
+			strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step PlanSelector"));
+		}
 		strategy.addStrategyModule(new TimeAllocationMutatorModule(this.tripRouterProvider, this.plansConfigGroup, this.timeAllocationMutatorConfigGroup, this.globalConfigGroup, this.population) );
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step TimeAllocationMutatorModule"));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION)) {
+			strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step TimeAllocationMutatorModule"));
+		}
 		strategy.addStrategyModule(new ReRoute(this.activityFacilities, this.tripRouterProvider, this.globalConfigGroup));
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step ReRoute"));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION) ||
+				controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.MEDIUM)) {
+			strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy TimeAllocationMutatorReRoute after Step ReRoute"));
+		}
 		return strategy;
 	}
 }

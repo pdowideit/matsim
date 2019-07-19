@@ -19,8 +19,10 @@
 
 package org.matsim.core.replanning.strategies;
 
+import org.matsim.core.config.groups.ControlerConfigGroup;
 import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.config.groups.SubtourModeChoiceConfigGroup;
+import org.matsim.core.config.groups.ControlerConfigGroup.PlanCheckerLevel;
 import org.matsim.core.replanning.PlanStrategy;
 import org.matsim.core.replanning.PlanStrategyImpl;
 import org.matsim.core.replanning.modules.PlanChecker;
@@ -35,6 +37,7 @@ import javax.inject.Provider;
 public class SubtourModeChoice implements Provider<PlanStrategy> {
 
 	@Inject private Provider<TripRouter> tripRouterProvider;
+	@Inject private ControlerConfigGroup controlerConfigGroup;
 	@Inject private GlobalConfigGroup globalConfigGroup;
 	@Inject private SubtourModeChoiceConfigGroup subtourModeChoiceConfigGroup;
 	@Inject private ActivityFacilities facilities;
@@ -42,11 +45,18 @@ public class SubtourModeChoice implements Provider<PlanStrategy> {
     @Override
 	public PlanStrategy get() {
 		PlanStrategyImpl strategy = new PlanStrategyImpl(new RandomPlanSelector());
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step PlanSelector"));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION)) {
+			strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step PlanSelector"));
+		}
 		strategy.addStrategyModule(new org.matsim.core.replanning.modules.SubtourModeChoice(tripRouterProvider, globalConfigGroup, subtourModeChoiceConfigGroup));
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step SubtourModeChoice"));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION)) {
+			strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step SubtourModeChoice"));
+		}
 		strategy.addStrategyModule(new ReRoute(facilities, tripRouterProvider, globalConfigGroup));
-		strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step ReRoute"));
+		if (controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.AFTER_EACH_MODIFICATION) ||
+				controlerConfigGroup.getPlanCheckerLevel().equals(PlanCheckerLevel.MEDIUM)) {
+			strategy.addStrategyModule(new PlanChecker(globalConfigGroup, "Strategy SubtourModeChoice after Step ReRoute"));
+		}
 		return strategy;
 	}
 
