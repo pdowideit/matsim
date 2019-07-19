@@ -56,9 +56,11 @@ public final class ControlerConfigGroup extends ReflectiveConfigGroup {
 	private static final String OVERWRITE_FILE = "overwriteFiles";
 	private static final String CREATE_GRAPHS = "createGraphs";
 	private static final String DUMP_DATA_AT_END = "dumpDataAtEnd";
+	private static final String PLAN_CHECKER_LEVEL = "planCheckerLevel";
 
 	/*package*/ static final String MOBSIM = "mobsim";
 	public enum MobsimType {qsim, JDEQSim}
+	public enum PlanCheckerLevel {OFF, MEDIUM, AFTER_EACH_MODIFICATION}
 
 	private static final String WRITE_SNAPSHOTS_INTERVAL = "writeSnapshotsInterval";
 
@@ -82,6 +84,7 @@ public final class ControlerConfigGroup extends ReflectiveConfigGroup {
 	private boolean createGraphs = true;
 	private boolean dumpDataAtEnd = true;
 	private OverwriteFileSetting overwriteFileSetting = OverwriteFileSetting.failIfDirectoryExists;
+	private PlanCheckerLevel planCheckerLevel = PlanCheckerLevel.OFF;
 
 	public ControlerConfigGroup() {
 		super(GROUP_NAME);
@@ -342,6 +345,15 @@ public final class ControlerConfigGroup extends ReflectiveConfigGroup {
 	public void setDumpDataAtEnd(boolean dumpDataAtEnd) {
 		this.dumpDataAtEnd = dumpDataAtEnd;
 	}
+	
+	public PlanCheckerLevel getPlanCheckerLevel() {
+		return this.planCheckerLevel;
+	}
+	
+	public void setPlanCheckerLevel(PlanCheckerLevel planCheckerLevel) {
+		this.planCheckerLevel = planCheckerLevel;
+	}
+	
 	// ---
 	int writePlansUntilIteration = 1 ;
 	public int getWritePlansUntilIteration() {
