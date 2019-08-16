@@ -75,10 +75,14 @@ public final class NetworkRoutingInclAccessEgressModule implements RoutingModule
 				return false ;
 			}
 			AccessEgressStageActivityTypes other = (AccessEgressStageActivityTypes) obj ;
-			return other.hashCode() == (NetworkRoutingInclAccessEgressModule.this.stageActivityType.hashCode()) ;
+			return stageActivityType.equals(other.getStageActivityTypeString());
 		}
 		@Override public int hashCode() {
 			return NetworkRoutingInclAccessEgressModule.this.stageActivityType.hashCode() ;
+		}
+		
+		private String getStageActivityTypeString() {
+			return stageActivityType;
 		}
 	}
 
