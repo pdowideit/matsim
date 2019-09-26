@@ -72,9 +72,11 @@ public class CarrierVehicle implements Vehicle {
 		@Deprecated
 		/**
 		 * please use @link{setTypeId} instead.
+		 * Refactoring advise: Please inline
 		 */
 		public Builder setType( VehicleType type ){
-			this.typeId=type.getId();
+//			this.type=type;
+			setTypeId(type.getId());
 			return this;
 		}
 
