@@ -62,19 +62,23 @@ public class CarrierVehicle implements Vehicle {
 		private Id<org.matsim.vehicles.VehicleType> typeId;
 		private double earliestStart = 0.0;
 		private double latestEnd = Integer.MAX_VALUE;
-		
-		
+
+
 		public Builder(Id<Vehicle> vehicleId, Id<Link> locationId){
 			this.locationId = locationId;
 			this.vehicleId = vehicleId;
 		}
-		
+
+		@Deprecated
+		/**
+		 * please use @link{setTypeId} instead.
+		 */
 		public Builder setType( VehicleType type ){
-			this.type=type;
+			this.typeId=type.getId();
 			return this;
 		}
-		
-		
+
+
 		public Builder setTypeId(Id<org.matsim.vehicles.VehicleType> typeId ){
 			this.typeId = typeId;
 			return this;
