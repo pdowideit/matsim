@@ -228,6 +228,10 @@ public final class TripRouter implements MatsimExtensionPoint {
 			if ( trip == null ) {
 				throw new NullPointerException( "Routing module "+module+" returned a null Trip for main mode "+mainMode );
 			}
+			
+			for (Leg leg: TripStructureUtils.getLegs(trip)) {
+				TripStructureUtils.setRoutingMode(leg, mainMode);
+			}
 
 			return trip;
 		}
