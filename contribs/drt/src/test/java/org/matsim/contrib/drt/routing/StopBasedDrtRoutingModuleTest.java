@@ -74,8 +74,9 @@ public class StopBasedDrtRoutingModuleTest {
 		DrtRoutingModule drtRoutingModule = new DrtRoutingModule(drtCfg, scenario.getNetwork(),
 				new FastAStarEuclideanFactory(), new FreeSpeedTravelTime(), TimeAsTravelDisutility::new, walkRouter,
 				scenario);
-		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = new StopBasedDrtRoutingModule(
-				scenario.getPopulation().getFactory(), drtRoutingModule, walkRouter, stopFinder, drtCfg, scenario);
+//		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = new StopBasedDrtRoutingModule(
+//				scenario.getPopulation().getFactory(), drtRoutingModule, walkRouter, stopFinder, drtCfg, scenario);
+		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = null ;
 
 		Person p1 = scenario.getPopulation().getPersons().get(Id.createPersonId(1));
 		Activity h = (Activity)p1.getSelectedPlan().getPlanElements().get(0);
