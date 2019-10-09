@@ -20,11 +20,11 @@
 package org.matsim.contrib.socnetsim.usage.replanning.strategies;
 
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.router.TripRouter;
 
 import org.matsim.contrib.socnetsim.framework.replanning.modules.ActivitySequenceMutatorModule;
 import org.matsim.contrib.socnetsim.framework.PlanRoutingAlgorithmFactory;
-import org.matsim.contrib.socnetsim.jointtrips.population.JointActingTypes;
 import org.matsim.contrib.socnetsim.framework.population.JointPlans;
 import org.matsim.contrib.socnetsim.framework.replanning.GroupPlanStrategy;
 import org.matsim.contrib.socnetsim.usage.replanning.GroupPlanStrategyFactoryUtils;
@@ -45,14 +45,16 @@ public class GroupActivitySequenceMutator extends AbstractConfigurableSelectionS
 	private final PlanRoutingAlgorithmFactory planRoutingAlgorithmFactory;
 	private final Provider<TripRouter> tripRouterFactory;
 	private final PlanLinkIdentifier planLinkIdentifier;
+	private final MainModeIdentifier mainModeIdentifier;
 
 	@Inject
 	public GroupActivitySequenceMutator( Scenario sc , PlanRoutingAlgorithmFactory planRoutingAlgorithmFactory , Provider<TripRouter> tripRouterFactory ,
-			@Strong PlanLinkIdentifier planLinkIdentifier ) {
+							 @Strong PlanLinkIdentifier planLinkIdentifier, MainModeIdentifier mainModeIdentifier ) {
 		this.sc = sc;
 		this.planRoutingAlgorithmFactory = planRoutingAlgorithmFactory;
 		this.tripRouterFactory = tripRouterFactory;
 		this.planLinkIdentifier = planLinkIdentifier;
+		this.mainModeIdentifier = mainModeIdentifier;
 	}
 
 
@@ -68,7 +70,7 @@ public class GroupActivitySequenceMutator extends AbstractConfigurableSelectionS
 		strategy.addStrategyModule(
 				GroupPlanStrategyFactoryUtils.createJointTripAwareTourModeUnifierModule(
 					sc.getConfig(),
-					tripRouterFactory ) );
+					mainModeIdentifier ) );
 
 		// TODO: add an option to enable or disable this part?
 		final VehicleRessources vehicles =
