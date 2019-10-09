@@ -31,6 +31,7 @@ import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
@@ -45,13 +46,17 @@ import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.router.FastAStarEuclideanFactory;
+import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TeleportationRoutingModule;
 import org.matsim.core.trafficmonitoring.FreeSpeedTravelTime;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.FacilitiesUtils;
 import org.matsim.facilities.Facility;
+import org.matsim.pt.transitSchedule.api.TransitSchedule;
 import org.matsim.pt.transitSchedule.api.TransitScheduleReader;
 import org.matsim.testcases.MatsimTestUtils;
+
+import com.google.inject.name.Named;
 
 /**
  * @author jbischoff
@@ -69,13 +74,12 @@ public class StopBasedDrtRoutingModuleTest {
 		TeleportationRoutingModule walkRouter = new TeleportationRoutingModule(TransportMode.walk, scenario,
 				networkTravelSpeed, beelineFactor);
 		DrtConfigGroup drtCfg = DrtConfigGroup.getSingleModeDrtConfig(scenario.getConfig());
-		AccessEgressStopFinder stopFinder = new DefaultAccessEgressStopFinder.DefaultAccessEgressStopFinderBuilder().setTransitSchedule( scenario.getTransitSchedule() ).setDrtconfig( drtCfg ).setPlanscCalcRouteCfg( scenario.getConfig().plansCalcRoute() ).setNetwork( scenario.getNetwork() ).createDefaultAccessEgressStopFinder();
+		AccessEgressStopFinder stopFinder = new DefaultAccessEgressStopFinder.DefaultAccessEgressStopFinderBuilder( drtCfg ).setTransitSchedule( scenario.getTransitSchedule() ).setPlansCalcRouteConfigGroup( scenario.getConfig().plansCalcRoute() ).setNetwork( scenario.getNetwork() ).get();
 		DrtRoutingModule drtRoutingModule = new DrtRoutingModule(drtCfg, scenario.getNetwork(),
 				new FastAStarEuclideanFactory(), new FreeSpeedTravelTime(), TimeAsTravelDisutility::new, walkRouter,
 				scenario);
-//		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = new StopBasedDrtRoutingModule(
-//				scenario.getPopulation().getFactory(), drtRoutingModule, walkRouter, stopFinder, drtCfg, scenario);
-		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = null ;
+		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = new StopBasedDrtRoutingModule(
+				drtRoutingModule, walkRouter, stopFinder, drtCfg, scenario, scenario.getNetwork());
 
 		Person p1 = scenario.getPopulation().getPersons().get(Id.createPersonId(1));
 		Activity h = (Activity)p1.getSelectedPlan().getPlanElements().get(0);
