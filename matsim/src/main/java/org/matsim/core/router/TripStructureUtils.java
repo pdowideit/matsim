@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.population.Activity;
@@ -50,6 +51,8 @@ import org.matsim.core.gbl.Gbl;
  * @author thibautd
  */
 public class TripStructureUtils {
+	
+	private static final Logger log = Logger.getLogger(TripStructureUtils.class);
 	
 	public enum StageActivityHandling { StagesAsNormalActivities, ExcludeStageActivities };
 
@@ -572,6 +575,9 @@ public class TripStructureUtils {
 	
 	public static String identifyMainMode( final List<? extends PlanElement> tripElements) {
 		String mode = TripStructureUtils.getRoutingMode(((Leg) tripElements.get( 0 )));	
+		if (mode == null) {
+			log.error("Could not find routing mode for trip " + tripElements);
+		}
 		return mode;
 	}
 
