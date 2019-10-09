@@ -68,15 +68,15 @@ public final class TripRouter implements MatsimExtensionPoint {
 	
 	public static final class Builder {
 		private final Config config;
-		private MainModeIdentifier mainModeIdentifier = new MainModeIdentifierImpl();
+//		private MainModeIdentifier mainModeIdentifier = new MainModeIdentifierImpl();
 		private Map<String, Provider<RoutingModule>> routingModuleProviders = new LinkedHashMap<>() ;
 		public Builder( Config config ) {
 			this.config = config ;
 		}
-		public Builder setMainModeIdentifier( MainModeIdentifier identifier ) {
-			this.mainModeIdentifier = identifier ;
-			return this ;
-		}
+//		public Builder setMainModeIdentifier( MainModeIdentifier identifier ) {
+//			this.mainModeIdentifier = identifier ;
+//			return this ;
+//		}
 		public Builder setRoutingModule(String mainMode, RoutingModule routingModule ) {
 			// the initial API accepted routing modules.  injection, however, takes routing module providers.  (why?)
 			// trying to bring these two into line here.  maybe some other approach would be preferred, don't know.  kai, jun'18

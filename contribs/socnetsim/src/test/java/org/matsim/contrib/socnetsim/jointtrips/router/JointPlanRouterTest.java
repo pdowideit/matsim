@@ -44,6 +44,7 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.TripRouter;
+import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.facilities.Facility;
 
@@ -78,6 +79,7 @@ public class JointPlanRouterTest {
 		act1.setEndTime( 1035 );
 		plan.addActivity( act1 );
 		final Leg leg = populationFactory.createLeg( JointActingTypes.PASSENGER );
+		TripStructureUtils.setRoutingMode( leg, JointActingTypes.PASSENGER );
 		plan.addLeg( leg );
 		plan.addActivity(
 				populationFactory.createActivityFromLinkId(
@@ -131,6 +133,7 @@ public class JointPlanRouterTest {
 		act1.setEndTime( 1035 );
 		plan.addActivity( act1 );
 		final Leg leg = populationFactory.createLeg( JointActingTypes.DRIVER );
+		TripStructureUtils.setRoutingMode( leg, JointActingTypes.DRIVER );
 		plan.addLeg( leg );
 		plan.addActivity(
 				populationFactory.createActivityFromLinkId(

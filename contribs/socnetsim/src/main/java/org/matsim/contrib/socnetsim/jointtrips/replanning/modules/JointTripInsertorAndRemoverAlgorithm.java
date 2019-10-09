@@ -30,6 +30,7 @@ import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Plan;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.router.TripStructureUtils.Trip;
@@ -44,27 +45,26 @@ import org.matsim.contrib.socnetsim.framework.replanning.GenericPlanAlgorithm;
  * @author thibautd
  */
 public class JointTripInsertorAndRemoverAlgorithm implements GenericPlanAlgorithm<JointPlan> {
-	private final TripRouter tripRouter;
 	private final Random random;
 	private final JointTripInsertorAlgorithm insertor;
 	private final JointTripRemoverAlgorithm remover;
 	private final boolean iterative;
 
 	public JointTripInsertorAndRemoverAlgorithm(
-			final Scenario scenario,
-			final TripRouter tripRouter,
-			final Random random,
-			final boolean iterative) {
-		this.tripRouter = tripRouter;
+		  final Scenario scenario,
+		  final Random random,
+		  final boolean iterative,
+		  MainModeIdentifier mainModeIdentifier ) {
 		this.random = random;
 		this.insertor = new JointTripInsertorAlgorithm(
-				random,
-				(SocialNetwork) scenario.getScenarioElement( SocialNetwork.ELEMENT_NAME ),
-				(JointTripInsertorConfigGroup) scenario.getConfig().getModule( JointTripInsertorConfigGroup.GROUP_NAME ),
-				tripRouter);
+			  random,
+			  (SocialNetwork) scenario.getScenarioElement( SocialNetwork.ELEMENT_NAME ),
+			  (JointTripInsertorConfigGroup) scenario.getConfig().getModule( JointTripInsertorConfigGroup.GROUP_NAME ),
+			  mainModeIdentifier
+		);
 		this.remover = new JointTripRemoverAlgorithm(
 				random,
-				TripStructureUtils.getMainModeIdentifier());
+				mainModeIdentifier );
 		this.iterative = iterative;
 	}
 

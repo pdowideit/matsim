@@ -40,6 +40,7 @@ import org.matsim.contrib.socnetsim.jointtrips.population.DriverRoute;
 import org.matsim.contrib.socnetsim.jointtrips.population.JointActingTypes;
 import org.matsim.contrib.socnetsim.jointtrips.population.PassengerRoute;
 import org.matsim.contrib.socnetsim.usage.JointScenarioUtils;
+import org.matsim.core.router.TripStructureUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,7 +88,8 @@ public class InsertionRemovalIgnoranceBehaviorTest {
 					random,
 					null,
 					(JointTripInsertorConfigGroup) config.getModule( JointTripInsertorConfigGroup.GROUP_NAME ),
-					tripRouter );
+				  TripStructureUtils.getMainModeIdentifier() // yyyyyy ??????
+			);
 		
 		JointPlan jointPlan = createPlanWithoutJointTrips();
 

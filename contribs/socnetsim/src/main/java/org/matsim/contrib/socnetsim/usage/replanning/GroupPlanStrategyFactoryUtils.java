@@ -85,9 +85,7 @@ public class GroupPlanStrategyFactoryUtils {
 	}
 
 	public static GenericStrategyModule<GroupPlans> createJointTripAwareTourModeUnifierModule(
-			final Config config,
-			final Provider<TripRouter> tripRouterFactory) {
-		final TripRouter router = tripRouterFactory.get();
+		  final Config config, MainModeIdentifier mainModeIdentifier ) {
 
 		return new IndividualBasedGroupStrategyModule(
 				new TourModeUnifierModule(
@@ -106,10 +104,12 @@ public class GroupPlanStrategyFactoryUtils {
 										((Leg) pe).getMode().equals( JointActingTypes.DRIVER ) ) {
 									return TransportMode.car;
 								}
-
 							}
+							// The idea, I guess, is that in subtour mode choice the driver needs to conserve her/his vehicle, while the
+							// passenger does not.  The above implementation seems incomplete in the sense that it only looks at the _first_
+							// occurence of a joint leg, i.e. someone who starts as a passenger always needs to be a passenger, etc.
 
-							return TripStructureUtils.identifyMainMode( tripElements );
+							return mainModeIdentifier.identifyMainMode( tripElements );
 						}
 					}) );
 	}
