@@ -54,7 +54,6 @@ public class JointTripInsertionWithSocialNetworkTest {
 	private static final Logger log =
 		Logger.getLogger(JointTripInsertionWithSocialNetworkTest.class);
 
-	@Ignore
 	@Test
 	public void testJointTripsGeneratedOnlyAlongSocialTies() {
 		final Random random = new Random( 123 );

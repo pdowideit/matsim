@@ -56,7 +56,6 @@ import org.matsim.contrib.socnetsim.jointtrips.population.PassengerRoute;
  * @author thibautd
  */
 public class JointPlanRouterTest {
-	@Ignore
 	@Test
 	public void testDriverIdIsKept() throws Exception {
 		final Config config = ConfigUtils.createConfig();
@@ -110,7 +109,6 @@ public class JointPlanRouterTest {
 				newRoute.getDriverId());
 	}
 
-	@Ignore
 	@Test
 	public void testPassengerIdIsKept() throws Exception {
 		final Config config = ConfigUtils.createConfig();

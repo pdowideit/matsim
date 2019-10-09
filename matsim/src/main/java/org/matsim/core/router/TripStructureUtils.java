@@ -565,7 +565,6 @@ public class TripStructureUtils {
 	
 	public static MainModeIdentifier getMainModeIdentifier() {
 		return new MainModeIdentifier() {
-			
 			@Override
 			public String identifyMainMode(List<? extends PlanElement> tripElements) {
 				return TripStructureUtils.identifyMainMode(tripElements);
@@ -574,7 +573,12 @@ public class TripStructureUtils {
 	}
 	
 	public static String identifyMainMode( final List<? extends PlanElement> tripElements) {
-		String mode = TripStructureUtils.getRoutingMode(((Leg) tripElements.get( 0 )));	
+		// first try the routing mode:
+		String mode = TripStructureUtils.getRoutingMode(((Leg) tripElements.get( 0 )));
+		// else see if trip has only one leg, if so, use that mode (situation after initial demand generation)
+		if ( mode == null || tripElements.size()==1 ) {
+			mode = ((Leg) tripElements.get(0)).getMode() ;
+		}
 		if (mode == null) {
 			log.error("Could not find routing mode for trip " + tripElements);
 		}

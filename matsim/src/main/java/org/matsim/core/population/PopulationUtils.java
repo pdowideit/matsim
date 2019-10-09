@@ -781,13 +781,6 @@ public final class PopulationUtils {
 		plan.addLeg( leg );
 		return leg ;
 	}
-	public static Leg createAndAddLeg(Plan plan, String mode, String routingMode) {
-		verifyCreateLeg( plan ) ;
-		Leg leg = getFactory().createLeg(mode) ;
-		plan.addLeg( leg );
-		TripStructureUtils.setRoutingMode( leg, routingMode );
-		return leg ;
-	}
 	private static void verifyCreateLeg(Plan plan) throws IllegalStateException {
 		if (plan.getPlanElements().size() == 0) {
 			throw new IllegalStateException("The order of 'acts'/'legs' is wrong in some way while trying to create a 'leg'.");
