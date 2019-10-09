@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
@@ -37,6 +38,7 @@ import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
@@ -188,5 +190,33 @@ public final class DrtRoutingModule implements RoutingModule {
 	 */
 	static double getMaxTravelTime( DrtConfigGroup drtCfg, double unsharedRideTime ) {
 		return drtCfg.getMaxTravelTimeAlpha() * unsharedRideTime + drtCfg.getMaxTravelTimeBeta();
+	}
+	
+	public static class Provider extends ModalProviders.AbstractProvider<DrtRoutingModule> {
+		private final LeastCostPathCalculatorFactory leastCostPathCalculatorFactory = new FastAStarEuclideanFactory();
+		private final DrtConfigGroup drtCfg;
+	
+		@Inject
+		@Named(DvrpTravelTimeModule.DVRP_ESTIMATED)
+		private TravelTime travelTime;
+	
+		@Inject
+		private Scenario scenario;
+	
+		@Inject
+		@Named(TransportMode.walk)
+		private RoutingModule walkRouter;
+	
+		public Provider( DrtConfigGroup drtCfg ) {
+			super(drtCfg.getMode());
+			this.drtCfg = drtCfg;
+		}
+	
+		@Override
+		public DrtRoutingModule get() {
+			Network network = getModalInstance(Network.class);
+			return new DrtRoutingModule(drtCfg, network, leastCostPathCalculatorFactory, travelTime,
+					getModalInstance( TravelDisutilityFactory.class), walkRouter, scenario);
+		}
 	}
 }

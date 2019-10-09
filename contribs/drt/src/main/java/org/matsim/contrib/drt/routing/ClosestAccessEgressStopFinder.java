@@ -28,11 +28,14 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.routing.StopBasedDrtRoutingModule.AccessEgressStopFinder;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.util.distance.DistanceUtils;
 import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
 import org.matsim.facilities.Facility;
 import org.matsim.pt.transitSchedule.api.TransitSchedule;
 import org.matsim.pt.transitSchedule.api.TransitStopFacility;
+
+import javax.inject.Inject;
 
 /**
  * @author michalm
@@ -42,8 +45,8 @@ public class ClosestAccessEgressStopFinder implements AccessEgressStopFinder {
 	private final Network network;
 	private final Map<Id<TransitStopFacility>, TransitStopFacility> stops;
 
-	public ClosestAccessEgressStopFinder(TransitSchedule transitSchedule, DrtConfigGroup drtconfig,
-			PlansCalcRouteConfigGroup planscCalcRouteCfg, Network network) {
+	private ClosestAccessEgressStopFinder( TransitSchedule transitSchedule, DrtConfigGroup drtconfig,
+							   PlansCalcRouteConfigGroup planscCalcRouteCfg, Network network ) {
 		this.network = network;
 		this.stops = transitSchedule.getFacilities();
 	}
@@ -68,5 +71,21 @@ public class ClosestAccessEgressStopFinder implements AccessEgressStopFinder {
 				.orElse(null);
 
 		return closest;
+	}
+
+	public static class Provider extends ModalProviders.AbstractProvider<AccessEgressStopFinder> {
+		@Inject PlansCalcRouteConfigGroup plansCalcRouteConfig ;
+		@Inject Network network ;
+		private DrtConfigGroup drtCfg;
+
+		public Provider( final DrtConfigGroup drtCfg ) {
+			super( drtCfg.getMode() );
+			this.drtCfg = drtCfg ;
+		}
+
+		@Override
+		public ClosestAccessEgressStopFinder get() {
+			return new ClosestAccessEgressStopFinder(  getModalInstance( TransitSchedule.class ), drtCfg, plansCalcRouteConfig, network ) ;
+		}
 	}
 }

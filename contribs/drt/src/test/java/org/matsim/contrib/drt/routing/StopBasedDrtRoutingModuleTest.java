@@ -69,8 +69,7 @@ public class StopBasedDrtRoutingModuleTest {
 		TeleportationRoutingModule walkRouter = new TeleportationRoutingModule(TransportMode.walk, scenario,
 				networkTravelSpeed, beelineFactor);
 		DrtConfigGroup drtCfg = DrtConfigGroup.getSingleModeDrtConfig(scenario.getConfig());
-		AccessEgressStopFinder stopFinder = new DefaultAccessEgressStopFinder(scenario.getTransitSchedule(), drtCfg,
-				scenario.getConfig().plansCalcRoute(), scenario.getNetwork());
+		AccessEgressStopFinder stopFinder = new DefaultAccessEgressStopFinder.DefaultAccessEgressStopFinderBuilder().setTransitSchedule( scenario.getTransitSchedule() ).setDrtconfig( drtCfg ).setPlanscCalcRouteCfg( scenario.getConfig().plansCalcRoute() ).setNetwork( scenario.getNetwork() ).createDefaultAccessEgressStopFinder();
 		DrtRoutingModule drtRoutingModule = new DrtRoutingModule(drtCfg, scenario.getNetwork(),
 				new FastAStarEuclideanFactory(), new FreeSpeedTravelTime(), TimeAsTravelDisutility::new, walkRouter,
 				scenario);

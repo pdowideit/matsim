@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.google.inject.Inject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Coord;
@@ -37,13 +38,11 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
-import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
-import org.matsim.core.config.Config;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.StageActivityTypes;
 import org.matsim.core.router.TripRouter;
-import org.matsim.facilities.FacilitiesUtils;
 import org.matsim.facilities.Facility;
 import org.matsim.pt.transitSchedule.api.TransitStopFacility;
 
@@ -199,5 +198,28 @@ public class StopBasedDrtRoutingModule implements RoutingModule {
 				throw new RuntimeException("From facility has neither coordinates nor link Id. Should not happen.");
 		}
 		return coord;
+	}
+
+	public static class Provider extends ModalProviders.AbstractProvider<StopBasedDrtRoutingModule> {
+		private final DrtConfigGroup drtCfg ;
+		@Inject private Scenario scenario ;
+		@Inject @Named(TransportMode.walk) private RoutingModule walkRouter ;
+
+		public Provider( final DrtConfigGroup drtCfg ) {
+			super( drtCfg.getMode() );
+			this.drtCfg = drtCfg ;
+		}
+
+		@Override
+		public StopBasedDrtRoutingModule get() {
+			return  new StopBasedDrtRoutingModule(
+					getModalInstance( DrtRoutingModule.class ),
+					walkRouter,
+					getModalInstance( AccessEgressStopFinder.class ),
+					drtCfg,
+					scenario,
+					getModalInstance( Network.class )
+			) ;
+		}
 	}
 }

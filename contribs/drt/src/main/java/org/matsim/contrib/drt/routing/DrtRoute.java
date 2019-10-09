@@ -33,12 +33,12 @@ import org.matsim.core.population.routes.AbstractRoute;
  * @author michalm (Michal Maciejewski)
  */
 public class DrtRoute extends AbstractRoute {
-    public final static String ROUTE_TYPE = TransportMode.drt;
+    final static String ROUTE_TYPE = TransportMode.drt;
 
 	private double maxWaitTime;
 	private double directRideTime;
 
-	public DrtRoute(Id<Link> startLinkId, Id<Link> endLinkId) {
+	/* package-private; use factory */ DrtRoute( Id<Link> startLinkId, Id<Link> endLinkId ) {
 		super(startLinkId, endLinkId);
 	}
 

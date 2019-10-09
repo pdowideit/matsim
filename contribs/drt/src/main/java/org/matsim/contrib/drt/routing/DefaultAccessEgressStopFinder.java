@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.matsim.api.core.v01.Coord;
@@ -32,6 +33,7 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.routing.StopBasedDrtRoutingModule.AccessEgressStopFinder;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.util.distance.DistanceUtils;
 import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
 import org.matsim.facilities.Facility;
@@ -151,5 +153,21 @@ public class DefaultAccessEgressStopFinder implements AccessEgressStopFinder {
 		vector[0] = to.getX() - from.getX();
 		vector[1] = to.getY() - from.getY();
 		return vector;
+	}
+
+	public static class DefaultAccessEgressStopFinderBuilder extends ModalProviders.AbstractProvider {
+		@Inject private TransitSchedule transitSchedule;
+		private DrtConfigGroup drtConfig;
+		@Inject private PlansCalcRouteConfigGroup plansCalcRouteCfg;
+		@Inject private Network network;
+
+		public DefaultAccessEgressStopFinderBuilder( final DrtConfigGroup drtConfig ) {
+			super( drtConfig.getMode() );
+			this.drtConfig = drtConfig ;
+		}
+
+		@Override public DefaultAccessEgressStopFinder get() {
+			return new DefaultAccessEgressStopFinder( transitSchedule, drtConfig, plansCalcRouteCfg, network );
+		}
 	}
 }

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.google.inject.Inject;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Leg;
@@ -28,6 +29,7 @@ import org.matsim.api.core.v01.population.Population;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.contrib.util.ExecutorServiceWithResource;
 import org.matsim.core.config.Config;
@@ -53,7 +55,7 @@ public class DefaultDrtRouteUpdater implements ShutdownListener, DrtRouteUpdater
 	private final Population population;
 	private final ExecutorServiceWithResource<LeastCostPathCalculator> executorService;
 
-	public DefaultDrtRouteUpdater(DrtConfigGroup drtCfg, Network network,
+	DefaultDrtRouteUpdater(DrtConfigGroup drtCfg, Network network,
 			@Named(DvrpTravelTimeModule.DVRP_ESTIMATED) TravelTime travelTime,
 			TravelDisutilityFactory travelDisutilityFactory, Population population, Config config) {
 		this.drtCfg = drtCfg;
@@ -102,5 +104,30 @@ public class DefaultDrtRouteUpdater implements ShutdownListener, DrtRouteUpdater
 	@Override
 	public void notifyShutdown(ShutdownEvent event) {
 		executorService.shutdown();
+	}
+
+	public static class DefaultDrtRouteUpdaterProvider extends ModalProviders.AbstractProvider<DrtRouteUpdater> {
+		@Inject
+		@Named(DvrpTravelTimeModule.DVRP_ESTIMATED)
+		private TravelTime travelTime;
+
+		@Inject
+		private Population population;
+
+		@Inject
+		private Config config;
+		private DrtConfigGroup drtCfg;
+
+		public DefaultDrtRouteUpdaterProvider( final DrtConfigGroup drtCfg ) {
+			super( drtCfg.getMode() );
+			this.drtCfg = drtCfg;
+		}
+
+		@Override
+		public DefaultDrtRouteUpdater get() {
+			Network network = getModalInstance(Network.class);
+			return new DefaultDrtRouteUpdater( drtCfg, network, travelTime,
+					getModalInstance( TravelDisutilityFactory.class), population, config);
+		}
 	}
 }
