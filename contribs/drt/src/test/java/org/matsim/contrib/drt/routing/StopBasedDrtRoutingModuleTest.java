@@ -69,13 +69,13 @@ public class StopBasedDrtRoutingModuleTest {
 		TeleportationRoutingModule walkRouter = new TeleportationRoutingModule(TransportMode.walk, scenario,
 				networkTravelSpeed, beelineFactor);
 		DrtConfigGroup drtCfg = DrtConfigGroup.getSingleModeDrtConfig(scenario.getConfig());
-		AccessEgressStopFinder stopFinder = new DefaultAccessEgressStopFinder(scenario.getTransitSchedule(), drtCfg,
-				scenario.getConfig().plansCalcRoute(), scenario.getNetwork());
+		AccessEgressStopFinder stopFinder = new DefaultAccessEgressStopFinder.DefaultAccessEgressStopFinderBuilder().setTransitSchedule( scenario.getTransitSchedule() ).setDrtconfig( drtCfg ).setPlanscCalcRouteCfg( scenario.getConfig().plansCalcRoute() ).setNetwork( scenario.getNetwork() ).createDefaultAccessEgressStopFinder();
 		DrtRoutingModule drtRoutingModule = new DrtRoutingModule(drtCfg, scenario.getNetwork(),
 				new FastAStarEuclideanFactory(), new FreeSpeedTravelTime(), TimeAsTravelDisutility::new, walkRouter,
 				scenario);
-		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = new StopBasedDrtRoutingModule(
-				scenario.getPopulation().getFactory(), drtRoutingModule, walkRouter, stopFinder, drtCfg, scenario);
+//		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = new StopBasedDrtRoutingModule(
+//				scenario.getPopulation().getFactory(), drtRoutingModule, walkRouter, stopFinder, drtCfg, scenario);
+		StopBasedDrtRoutingModule stopBasedDRTRoutingModule = null ;
 
 		Person p1 = scenario.getPopulation().getPersons().get(Id.createPersonId(1));
 		Activity h = (Activity)p1.getSelectedPlan().getPlanElements().get(0);

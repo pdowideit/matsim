@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.TransportMode;
@@ -37,6 +38,7 @@ import org.matsim.api.core.v01.population.PopulationFactory;
 import org.matsim.contrib.drt.run.DrtConfigGroup;
 import org.matsim.contrib.dvrp.path.VrpPathWithTravelData;
 import org.matsim.contrib.dvrp.path.VrpPaths;
+import org.matsim.contrib.dvrp.run.ModalProviders;
 import org.matsim.contrib.dvrp.trafficmonitoring.DvrpTravelTimeModule;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.groups.PlansCalcRouteConfigGroup;
@@ -50,13 +52,14 @@ import org.matsim.facilities.FacilitiesUtils;
 import org.matsim.facilities.Facility;
 
 import com.google.inject.name.Named;
+import org.matsim.pt.transitSchedule.api.TransitStopFacility;
 
 /**
  * @author jbischoff
  * @author michalm (Michal Maciejewski)
  * @author Kai Nagel
  */
-public class DrtRoutingModule implements RoutingModule {
+public final class DrtRoutingModule implements RoutingModule {
 	private static final Logger LOGGER = Logger.getLogger(DrtRoutingModule.class);
 
 	private final DrtConfigGroup drtCfg;
@@ -69,13 +72,12 @@ public class DrtRoutingModule implements RoutingModule {
 	private final DrtStageActivityType drtStageActivityType;
 	private final PlansCalcRouteConfigGroup plansCalcRouteConfig;
 
-	public DrtRoutingModule(DrtConfigGroup drtCfg, Network network,
+	DrtRoutingModule(DrtConfigGroup drtCfg, Network network,
 			LeastCostPathCalculatorFactory leastCostPathCalculatorFactory,
 			@Named(DvrpTravelTimeModule.DVRP_ESTIMATED) TravelTime travelTime,
 			TravelDisutilityFactory travelDisutilityFactory, @Named(TransportMode.walk) RoutingModule walkRouter,
 			Scenario scenario) {
-		// constructor was public when I found it, and cannot be made package private.  Thus now passing scenario as argument so we have a bit more
-		// flexibility for changes without having to change the argument list every time.  kai, jul'19
+		// please leave constructors with long argument lists package private.  kai, oct'19
 
 		this.drtCfg = drtCfg;
 		this.config = scenario.getConfig();
@@ -125,7 +127,7 @@ public class DrtRoutingModule implements RoutingModule {
 		List<PlanElement> result = new ArrayList<>();
 
 		// === access:
-		if (plansCalcRouteConfig.isInsertingAccessEgressWalk()) {
+		if (plansCalcRouteConfig.isInsertingAccessEgressWalk() || !(fromFacility instanceof TransitStopFacility ))  {
 //			now = addBushwhackingLegFromFacilityToLinkIfNecessary(fromFacility, person, accessActLink, now, result,
 //					populationFactory, drtStageActivityType.drtStageActivity);
 			List<? extends PlanElement> result2 = walkRouter.calcRoute( fromFacility, new LinkWrapperFacility( accessActLink ), now, person );
@@ -136,27 +138,10 @@ public class DrtRoutingModule implements RoutingModule {
 		}
 
 		// === drt proper:
-		{
-			VrpPathWithTravelData unsharedPath = VrpPaths.calcAndCreatePath(accessActLink, egressActLink, departureTime,
-					router, travelTime);
-			double unsharedRideTime = unsharedPath.getTravelTime();//includes first & last link
-			double maxTravelTime = getMaxTravelTime(drtCfg, unsharedRideTime);
-			double unsharedDistance = VrpPaths.calcDistance(unsharedPath);//includes last link
-
-			DrtRoute route = populationFactory.getRouteFactories()
-					.createRoute(DrtRoute.class, accessActLink.getId(), egressActLink.getId());
-			route.setDistance(unsharedDistance);
-			route.setTravelTime(maxTravelTime);
-			route.setUnsharedRideTime(unsharedRideTime);
-			route.setMaxWaitTime(drtCfg.getMaxWaitTime());
-
-			Leg leg = populationFactory.createLeg(drtCfg.getMode());
-			leg.setDepartureTime(departureTime);
-			leg.setTravelTime(maxTravelTime);
-			leg.setRoute(route);
-
-			result.add(leg);
-			now += maxTravelTime;
+		final List<PlanElement> newResult = addDirectDrtRoute( departureTime, accessActLink, egressActLink );
+		result.addAll( newResult ) ;
+		for ( final PlanElement planElement : newResult ) {
+			now = TripRouter.calcEndOfPlanElement( now, planElement, config ) ;
 		}
 
 		// === egress:
@@ -165,6 +150,29 @@ public class DrtRoutingModule implements RoutingModule {
 					populationFactory, drtStageActivityType.drtStageActivity);
 		}
 
+		return result;
+	}
+
+	/* package */ List<PlanElement> addDirectDrtRoute( final double departureTime, final Link accessActLink, final Link egressActLink ) {
+		VrpPathWithTravelData unsharedPath = VrpPaths.calcAndCreatePath(accessActLink, egressActLink, departureTime,
+				router, travelTime);
+		double unsharedRideTime = unsharedPath.getTravelTime();//includes first & last link
+		double maxTravelTime = getMaxTravelTime(drtCfg, unsharedRideTime);
+		double unsharedDistance = VrpPaths.calcDistance(unsharedPath);//includes last link
+
+		DrtRoute route = populationFactory.getRouteFactories()
+				.createRoute(DrtRoute.class, accessActLink.getId(), egressActLink.getId());
+		route.setDistance(unsharedDistance);
+		route.setTravelTime(maxTravelTime);
+		route.setUnsharedRideTime(unsharedRideTime);
+		route.setMaxWaitTime(drtCfg.getMaxWaitTime());
+
+		Leg leg = populationFactory.createLeg(drtCfg.getMode());
+		leg.setDepartureTime(departureTime);
+		leg.setTravelTime(maxTravelTime);
+		leg.setRoute(route);
+		List<PlanElement> result = new ArrayList<>() ;
+		result.add(leg);
 		return result;
 	}
 
@@ -180,7 +188,35 @@ public class DrtRoutingModule implements RoutingModule {
 	 * @param unsharedRideTime ride time of the direct (shortest-time) route
 	 * @return maximum travel time
 	 */
-	public static double getMaxTravelTime(DrtConfigGroup drtCfg, double unsharedRideTime) {
+	static double getMaxTravelTime( DrtConfigGroup drtCfg, double unsharedRideTime ) {
 		return drtCfg.getMaxTravelTimeAlpha() * unsharedRideTime + drtCfg.getMaxTravelTimeBeta();
+	}
+	
+	public static class Provider extends ModalProviders.AbstractProvider<DrtRoutingModule> {
+		private final LeastCostPathCalculatorFactory leastCostPathCalculatorFactory = new FastAStarEuclideanFactory();
+		private final DrtConfigGroup drtCfg;
+	
+		@Inject
+		@Named(DvrpTravelTimeModule.DVRP_ESTIMATED)
+		private TravelTime travelTime;
+	
+		@Inject
+		private Scenario scenario;
+	
+		@Inject
+		@Named(TransportMode.walk)
+		private RoutingModule walkRouter;
+	
+		public Provider( DrtConfigGroup drtCfg ) {
+			super(drtCfg.getMode());
+			this.drtCfg = drtCfg;
+		}
+	
+		@Override
+		public DrtRoutingModule get() {
+			Network network = getModalInstance(Network.class);
+			return new DrtRoutingModule(drtCfg, network, leastCostPathCalculatorFactory, travelTime,
+					getModalInstance( TravelDisutilityFactory.class), walkRouter, scenario);
+		}
 	}
 }
