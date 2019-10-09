@@ -21,6 +21,7 @@
 package org.matsim.core.population.algorithms;
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
@@ -35,6 +36,7 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.algorithms.TransportModeNetworkFilter;
 import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.population.routes.RouteUtils;
+import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.router.StageActivityTypesImpl;
 import org.matsim.core.router.TripStructureUtils;
 import org.matsim.core.router.TripStructureUtils.Trip;
@@ -59,9 +61,23 @@ public final class PersonPrepareForSim extends AbstractPersonAlgorithm {
 	private final XY2Links xy2links;
 	private final Network carOnlyNetwork;
 	private final ActivityFacilities activityFacilities;
+	private final MainModeIdentifier backwardCompatibilityMainModeIdentifier;
 
 	private static final Logger log = Logger.getLogger(PersonPrepareForSim.class);
 	private final Scenario scenario;
+	
+	public PersonPrepareForSim(final PlanAlgorithm router, final Scenario scenario, final Network carOnlyNetwork, final MainModeIdentifier backwardCompatibilityMainModeIdentifier) {
+		super();
+		this.router = router;
+		this.carOnlyNetwork = carOnlyNetwork ;
+		if (NetworkUtils.isMultimodal(carOnlyNetwork)) {
+			throw new RuntimeException("Expected carOnlyNetwork not to be multi-modal. Aborting!");
+		}
+		this.xy2links = new XY2Links(carOnlyNetwork, scenario.getActivityFacilities());
+		this.activityFacilities = scenario.getActivityFacilities();
+		this.scenario = scenario ;
+		this.backwardCompatibilityMainModeIdentifier = backwardCompatibilityMainModeIdentifier;
+	}
 	
 	/*
 	 * To be used by the controller which creates multiple instances of this class which would
@@ -78,6 +94,7 @@ public final class PersonPrepareForSim extends AbstractPersonAlgorithm {
 		this.xy2links = new XY2Links(carOnlyNetwork, scenario.getActivityFacilities());
 		this.activityFacilities = scenario.getActivityFacilities();
 		this.scenario = scenario ;
+		this.backwardCompatibilityMainModeIdentifier = null;
 	}
 	
 	public PersonPrepareForSim(final PlanAlgorithm router, final Scenario scenario) {
@@ -97,6 +114,7 @@ public final class PersonPrepareForSim extends AbstractPersonAlgorithm {
 		this.xy2links = new XY2Links(net, scenario.getActivityFacilities());
 		this.activityFacilities = scenario.getActivityFacilities();
 		this.scenario = scenario ;
+		this.backwardCompatibilityMainModeIdentifier = null;
 	}
 
 	@Override
@@ -117,13 +135,27 @@ public final class PersonPrepareForSim extends AbstractPersonAlgorithm {
 			boolean needsXY2Links = false;
 			boolean needsReRoute = false;
 			
-			// for backward compatibility: replace all non-direct transit_walk legs (trips with more than one leg) by non_network_walk
+			// for backward compatibility: replace all non-direct transit_walk legs (trips with more than one leg) by non_network_walk			
 			for (Trip trip : TripStructureUtils.getTrips(plan.getPlanElements(), new StageActivityTypesImpl(PtConstants.TRANSIT_ACTIVITY_TYPE))) {
-				if (trip.getLegsOnly().size() > 1) {
+				List<Leg> legs = trip.getLegsOnly();
+				if (legs.size() > 1) {
+					String routingMode = null;
 					
-					for (Leg leg : trip.getLegsOnly()) {
+					for (Leg leg : legs) {
 						if (leg.getMode().equals("transit_walk")) {
 							leg.setMode(TransportMode.non_network_walk);
+						}
+						
+						// for backward compatibility: add routingMode to legs if not present			
+						if (TripStructureUtils.getRoutingMode(leg) == null) {
+							if (routingMode == null) {
+								if (backwardCompatibilityMainModeIdentifier == null) {
+									log.error("Found a trip without routingMode, but there is no MainModeIdentifier set up for PrepareForSim, so cannot infer the routing mode from a MainModeIdentifier. Trip: " + trip.getTripElements());
+									new RuntimeException("no MainModeIdentifier set up for PrepareForSim");
+								}
+								routingMode = backwardCompatibilityMainModeIdentifier.identifyMainMode(trip.getTripElements());
+							}
+							TripStructureUtils.setRoutingMode(leg, routingMode);
 						}
 					}					
 				}					

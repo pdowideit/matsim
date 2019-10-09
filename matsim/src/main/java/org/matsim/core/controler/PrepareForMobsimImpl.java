@@ -112,7 +112,7 @@ public final class PrepareForMobsimImpl implements PrepareForMobsim {
 				new ParallelPersonAlgorithmUtils.PersonAlgorithmProvider() {
 					@Override
 					public AbstractPersonAlgorithm getPersonAlgorithm() {
-						return new PersonPrepareForSim(new PlanRouter(tripRouterProvider.get(), activityFacilities), scenario, carOnlyNetwork );
+						return new PersonPrepareForSim(new PlanRouter(tripRouterProvider.get(), activityFacilities), scenario, carOnlyNetwork, tripRouterProvider.get().getMainModeIdentifier());
 					}
 					// yyyyyy This prepared network is only used for computing the distance.  So the full network would
 					// actually be better than the car-only network, without doing damage elsewhere.  No?  kai, jul'18

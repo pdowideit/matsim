@@ -151,7 +151,7 @@ public final class PrepareForSimImpl implements PrepareForSim, PrepareForMobsim 
 		// At least xy2links is needed here, i.e. earlier than PrepareForMobsimImpl.  It could, however, presumably be separated out
 		// (i.e. we introduce a separate PersonPrepareForMobsim).  kai, jul'18
 		ParallelPersonAlgorithmUtils.run(population, globalConfigGroup.getNumberOfThreads(),
-				() -> new PersonPrepareForSim(new PlanRouter(tripRouterProvider.get(), activityFacilities), scenario, carOnlyNetwork)
+				() -> new PersonPrepareForSim(new PlanRouter(tripRouterProvider.get(), activityFacilities), scenario, carOnlyNetwork, tripRouterProvider.get().getMainModeIdentifier())
 		);
 		
 		if (scenario instanceof Lockable) {
