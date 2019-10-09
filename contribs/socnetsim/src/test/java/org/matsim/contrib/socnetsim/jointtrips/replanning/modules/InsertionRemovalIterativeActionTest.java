@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -73,6 +74,7 @@ public class InsertionRemovalIterativeActionTest {
 		random = new Random( 1234 );
 	}
 
+	@Ignore
 	@Test
 	public void testNonIterativeRemoval() throws Exception {
 		JointTripInsertorAndRemoverAlgorithm algo =
@@ -115,6 +117,7 @@ public class InsertionRemovalIterativeActionTest {
 				p);
 	}
 
+	@Ignore
 	@Test
 	public void testIterativeRemoval() throws Exception {
 		JointTripInsertorAndRemoverAlgorithm algo =
@@ -157,6 +160,7 @@ public class InsertionRemovalIterativeActionTest {
 				p);
 	}
 
+	@Ignore
 	@Test
 	public void testNonIterativeInsertion() throws Exception {
 		JointTripInsertorAndRemoverAlgorithm algo =
@@ -215,6 +219,7 @@ public class InsertionRemovalIterativeActionTest {
 				p);
 	}
 
+	@Ignore
 	@Test
 	public void testIterativeInsertion() throws Exception {
 		JointTripInsertorAndRemoverAlgorithm algo =

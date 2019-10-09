@@ -117,7 +117,7 @@ public class JointTripInsertorAlgorithm implements GenericPlanAlgorithm<JointPla
 			// or go from drop offs...
 			final MainModeIdentifier mainModeIdentifier =
 				new JointMainModeIdentifier(
-						router.getMainModeIdentifier() );
+						TripStructureUtils.getMainModeIdentifier() );
 
 			for ( TripStructureUtils.Trip trip : TripStructureUtils.getTrips( plan , JointActingTypes.JOINT_STAGE_ACTS ) ) {
 				final String mode = mainModeIdentifier.identifyMainMode( trip.getTripElements() );

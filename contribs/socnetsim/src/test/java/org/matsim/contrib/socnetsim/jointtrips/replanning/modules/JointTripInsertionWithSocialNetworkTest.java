@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
@@ -55,6 +56,7 @@ public class JointTripInsertionWithSocialNetworkTest {
 	private static final Logger log =
 		Logger.getLogger(JointTripInsertionWithSocialNetworkTest.class);
 
+	@Ignore
 	@Test
 	public void testJointTripsGeneratedOnlyAlongSocialTies() {
 		final Random random = new Random( 123 );

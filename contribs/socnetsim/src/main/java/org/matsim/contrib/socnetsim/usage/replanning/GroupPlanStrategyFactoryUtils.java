@@ -27,6 +27,7 @@ import org.matsim.core.population.algorithms.PlanAlgorithm;
 import org.matsim.core.replanning.modules.AbstractMultithreadedModule;
 import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.router.TripRouter;
+import org.matsim.core.router.TripStructureUtils;
 import org.matsim.contrib.socnetsim.framework.replanning.modules.TourModeUnifierModule;
 import org.matsim.contrib.socnetsim.framework.PlanRoutingAlgorithmFactory;
 import org.matsim.contrib.socnetsim.framework.replanning.GenericStrategyModule;
@@ -108,7 +109,7 @@ public class GroupPlanStrategyFactoryUtils {
 
 							}
 
-							return router.getMainModeIdentifier().identifyMainMode( tripElements );
+							return TripStructureUtils.identifyMainMode( tripElements );
 						}
 					}) );
 	}

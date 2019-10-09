@@ -84,7 +84,7 @@ public class AllocateVehicleToSubtourAlgorithm implements PlanAlgorithm {
 	}
 
 	private String identifyMainMode(final Trip t) {
-		return tripRouter.getMainModeIdentifier().identifyMainMode( t.getTripElements() );
+		return TripStructureUtils.identifyMainMode( t.getTripElements() );
 	}
 
 	private List<Subtour> getRootSubtoursWithMode(final Plan plan) {
@@ -102,7 +102,7 @@ public class AllocateVehicleToSubtourAlgorithm implements PlanAlgorithm {
 
 	private boolean containsMode( final Subtour s ) {
 		for ( Trip t : s.getTrips() ) {
-			if ( tripRouter.getMainModeIdentifier().identifyMainMode(
+			if ( TripStructureUtils.identifyMainMode(
 						t.getTripElements() ).equals( mode ) ) {
 				return true;
 			}
