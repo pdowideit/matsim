@@ -95,8 +95,8 @@ public final class EditPlans {
 		final Trip tripBefore = TripStructureUtils.findTripEndingAtActivity( (Activity) planElements.get(index),plan );
 		final Trip tripAfter = TripStructureUtils.findTripStartingAtActivity( (Activity)planElements.get(index),plan );
 		if ( mode==null ) {
-			final String mainModeBefore = tripRouter.getMainModeIdentifier().identifyMainMode( tripBefore.getTripElements() );
-			final String mainModeAfter = tripRouter.getMainModeIdentifier().identifyMainMode( tripAfter.getTripElements() );
+			final String mainModeBefore = TripStructureUtils.identifyMainMode( tripBefore.getTripElements() );
+			final String mainModeAfter = TripStructureUtils.identifyMainMode( tripAfter.getTripElements() );
 			if ( mainModeBefore.equals( mainModeAfter ) ) {
 				mode = mainModeBefore ;
 			} else {
@@ -151,7 +151,7 @@ public final class EditPlans {
 			Gbl.assertNotNull( tripBeforeAct );  // there could also just be a sequence of activities?!
 
 			final List<PlanElement> currentTripElements = tripBeforeAct.getTripElements();
-			final String currentMode = this.tripRouter.getMainModeIdentifier().identifyMainMode( currentTripElements ) ;
+			final String currentMode = TripStructureUtils.identifyMainMode( currentTripElements ) ;
 
 			if ( checkIfTripHasAlreadyStarted(agent, currentTripElements) ) {
 				// trip has already started
@@ -170,7 +170,7 @@ public final class EditPlans {
 			Trip tripAfterAct = TripStructureUtils.findTripStartingAtActivity(origAct,plan);
 			Gbl.assertIf( tripAfterAct!=null ); // there could also just be a sequence of activities?!
 			if ( downstreamMode==null ) {
-				final String currentMainMode = this.tripRouter.getMainModeIdentifier().identifyMainMode( tripAfterAct.getTripElements() );
+				final String currentMainMode = TripStructureUtils.identifyMainMode( tripAfterAct.getTripElements() );
 				EditTrips.insertEmptyTrip(plan, newAct, tripAfterAct.getDestinationActivity(), currentMainMode, pf);
 			} else {
 				EditTrips.insertEmptyTrip(plan, newAct, tripAfterAct.getDestinationActivity(), downstreamMode, pf);
@@ -227,7 +227,7 @@ public final class EditPlans {
 	 * Convenience method, clarifying that this can be called without giving the mode.
 	 */
 	public void insertActivity(MobsimAgent agent, int index, Activity activity ) {
-		String mode = tripRouter.getMainModeIdentifier().identifyMainMode( editTrips.findCurrentTrip(agent).getTripElements() ) ;
+		String mode = TripStructureUtils.identifyMainMode( editTrips.findCurrentTrip(agent).getTripElements() ) ;
 		insertActivity( agent, index, activity, mode, mode ) ;
 	}
 
@@ -333,7 +333,7 @@ public final class EditPlans {
 		} else {
 			trip = editTrips.findCurrentTrip(agent) ;
 		}
-		return tripRouter.getMainModeIdentifier().identifyMainMode(trip.getTripElements()) ;
+		return TripStructureUtils.identifyMainMode(trip.getTripElements()) ;
 	}
 	public void flushEverythingBeyondCurrent(MobsimAgent agent) {
 		List<PlanElement> pes = WithinDayAgentUtils.getModifiablePlan(agent).getPlanElements() ;

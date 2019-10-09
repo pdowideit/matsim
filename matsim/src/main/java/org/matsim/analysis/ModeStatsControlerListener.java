@@ -87,7 +87,7 @@ ShutdownListener {
 
 	@Inject
 	ModeStatsControlerListener(ControlerConfigGroup controlerConfigGroup, Population population1, OutputDirectoryHierarchy controlerIO,
-			PlanCalcScoreConfigGroup scoreConfig, Provider<TripRouter> tripRouterFactory ) {
+			PlanCalcScoreConfigGroup scoreConfig, Provider<TripRouter> tripRouterFactory, MainModeIdentifier mainModeIdentifier ) {
 		this.controlerConfigGroup = controlerConfigGroup;
 		this.population = population1;
 		this.modeFileName = controlerIO.getOutputFilename( FILENAME_MODESTATS ) ;
@@ -105,13 +105,12 @@ ShutdownListener {
 			throw new UncheckedIOException(e);
 		}
 		this.tripRouterFactory = tripRouterFactory;
+		this.mainModeIdentifier = mainModeIdentifier;
 	}
 
 	@Override
 	public void notifyStartup(final StartupEvent event) {
 		this.minIteration = controlerConfigGroup.getFirstIteration();
-		TripRouter tripRouter = tripRouterFactory.get();
-		this.mainModeIdentifier = tripRouter.getMainModeIdentifier() ;
 	}
 
 	@Override

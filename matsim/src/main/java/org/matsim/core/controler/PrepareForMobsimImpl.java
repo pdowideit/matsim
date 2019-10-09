@@ -38,6 +38,7 @@ import org.matsim.core.population.algorithms.AbstractPersonAlgorithm;
 import org.matsim.core.population.algorithms.ParallelPersonAlgorithmUtils;
 import org.matsim.core.population.algorithms.PersonPrepareForSim;
 import org.matsim.core.population.routes.NetworkRoute;
+import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.router.PlanRouter;
 import org.matsim.core.router.TripRouter;
 import org.matsim.core.scenario.Lockable;
@@ -70,11 +71,12 @@ public final class PrepareForMobsimImpl implements PrepareForMobsim {
 	private final Provider<TripRouter> tripRouterProvider;
 	private final QSimConfigGroup qSimConfigGroup;
 	private final FacilitiesConfigGroup facilitiesConfigGroup;
+	private final MainModeIdentifier mainModeIdentifier;
 	
 	@Inject
 	PrepareForMobsimImpl(GlobalConfigGroup globalConfigGroup, Scenario scenario, Network network,
 				Population population, ActivityFacilities activityFacilities, Provider<TripRouter> tripRouterProvider,
-				QSimConfigGroup qSimConfigGroup, FacilitiesConfigGroup facilitiesConfigGroup) {
+				QSimConfigGroup qSimConfigGroup, FacilitiesConfigGroup facilitiesConfigGroup, MainModeIdentifier mainModeIdentifier) {
 		this.globalConfigGroup = globalConfigGroup;
 		this.scenario = scenario;
 		this.network = network;
@@ -83,6 +85,7 @@ public final class PrepareForMobsimImpl implements PrepareForMobsim {
 		this.tripRouterProvider = tripRouterProvider;
 		this.qSimConfigGroup = qSimConfigGroup;
 		this.facilitiesConfigGroup = facilitiesConfigGroup;
+		this.mainModeIdentifier = mainModeIdentifier;
 	}
 	
 	
@@ -112,7 +115,7 @@ public final class PrepareForMobsimImpl implements PrepareForMobsim {
 				new ParallelPersonAlgorithmUtils.PersonAlgorithmProvider() {
 					@Override
 					public AbstractPersonAlgorithm getPersonAlgorithm() {
-						return new PersonPrepareForSim(new PlanRouter(tripRouterProvider.get(), activityFacilities), scenario, carOnlyNetwork, tripRouterProvider.get().getMainModeIdentifier());
+						return new PersonPrepareForSim(new PlanRouter(tripRouterProvider.get(), activityFacilities), scenario, carOnlyNetwork, mainModeIdentifier);
 					}
 					// yyyyyy This prepared network is only used for computing the distance.  So the full network would
 					// actually be better than the car-only network, without doing damage elsewhere.  No?  kai, jul'18

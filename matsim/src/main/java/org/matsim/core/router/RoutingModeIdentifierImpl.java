@@ -27,12 +27,7 @@ import org.matsim.api.core.v01.population.PlanElement;
 /**
  * @author thibaut
  */
-public final class RoutingModeIdentifierImpl implements MainModeIdentifier {
+public final class RoutingModeIdentifierImpl {
 	
-	@Override
-	public String identifyMainMode( final List<? extends PlanElement> tripElements) {
-		String mode = TripStructureUtils.getRoutingMode(((Leg) tripElements.get( 0 )));	
-		
-		return mode;
-	}
+
 }

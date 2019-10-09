@@ -88,7 +88,7 @@ public class PlanRouter implements PlanAlgorithm, PersonAlgorithm {
 		for (Trip oldTrip : trips) {
 			final List<? extends PlanElement> newTrip =
 					tripRouter.calcRoute(
-							tripRouter.getMainModeIdentifier().identifyMainMode( oldTrip.getTripElements() ),
+							TripStructureUtils.identifyMainMode( oldTrip.getTripElements() ),
 						  FacilitiesUtils.toFacility( oldTrip.getOriginActivity(), facilities ),
 						  FacilitiesUtils.toFacility( oldTrip.getDestinationActivity(), facilities ),
 							calcEndOfActivity( oldTrip.getOriginActivity() , plan, tripRouter.getConfig() ),

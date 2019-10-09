@@ -170,17 +170,18 @@ public class DefaultAccessEgressStopFinder implements AccessEgressStopFinder {
 			return new DefaultAccessEgressStopFinder( transitSchedule, drtConfig, plansCalcRouteCfg, network );
 		}
 		
-		public DefaultAccessEgressStopFinderBuilder setTransitSchedule(TransitSchedule transitSchedule) {
+		// for tests
+		DefaultAccessEgressStopFinderBuilder setTransitSchedule(TransitSchedule transitSchedule) {
 			this.transitSchedule = transitSchedule;
 			return this;
 		}
 		
-		public DefaultAccessEgressStopFinderBuilder setPlansCalcRouteConfigGroup(PlansCalcRouteConfigGroup plansCalcRouteCfg) {
+		DefaultAccessEgressStopFinderBuilder setPlansCalcRouteConfigGroup(PlansCalcRouteConfigGroup plansCalcRouteCfg) {
 			this.plansCalcRouteCfg = plansCalcRouteCfg;
 			return this;
 		}
 		
-		public DefaultAccessEgressStopFinderBuilder setNetwork(Network network) {
+		DefaultAccessEgressStopFinderBuilder setNetwork(Network network) {
 			this.network = network;
 			return this;
 		}

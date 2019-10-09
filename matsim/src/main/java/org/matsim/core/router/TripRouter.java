@@ -61,8 +61,6 @@ public final class TripRouter implements MatsimExtensionPoint {
 	private static final Logger log = Logger.getLogger(TripRouter.class );
 	
 	private final Map<String, RoutingModule> routingModules = new HashMap<>();
-	
-	private MainModeIdentifier mainModeIdentifier = new MainModeIdentifierImpl();
 
 	private Config config;
 	// (I need the config in the PlanRouter to figure out activity end times. And since the PlanRouter is not
@@ -90,7 +88,7 @@ public final class TripRouter implements MatsimExtensionPoint {
 			return this ;
 		}
 		public TripRouter build() {
-			return new TripRouter( routingModuleProviders, mainModeIdentifier, config ) ;
+			return new TripRouter( routingModuleProviders, config ) ;
 		}
 	}
 
@@ -103,12 +101,11 @@ public final class TripRouter implements MatsimExtensionPoint {
 //	// kai, sep'16
 
 	@Inject
-	TripRouter(Map<String, Provider<RoutingModule>> routingModuleProviders, MainModeIdentifier mainModeIdentifier, Config config ) {
+	TripRouter(Map<String, Provider<RoutingModule>> routingModuleProviders, Config config ) {
 		
 		for (Map.Entry<String, Provider<RoutingModule>> entry : routingModuleProviders.entrySet()) {
 			setRoutingModule(entry.getKey(), entry.getValue().get());
 		}
-		setMainModeIdentifier(mainModeIdentifier);
 		this.config = config ;
 	}
 
@@ -140,25 +137,6 @@ public final class TripRouter implements MatsimExtensionPoint {
 
 	public Set<String> getRegisteredModes() {
 		return Collections.unmodifiableSet( routingModules.keySet() );
-	}
-
-	/**
-	 * Sets the {@link MainModeIdentifier} instance returned by this trip router.
-	 * Note that it is not used internally: it is just provided here because it is useful
-	 * mainly for users of this class.
-	 *
-	 * @param newIdentifier the instance to register
-	 * @return the previous registered instance
-	 */
-	@Deprecated // use the Builder instead.  kai, oct'17
-	/* package-private */ MainModeIdentifier setMainModeIdentifier(final MainModeIdentifier newIdentifier) {
-		final MainModeIdentifier old = this.mainModeIdentifier;
-		this.mainModeIdentifier = newIdentifier;
-		return old;
-	}
-
-	public MainModeIdentifier getMainModeIdentifier() {
-		return mainModeIdentifier;
 	}
 
 	// /////////////////////////////////////////////////////////////////////////

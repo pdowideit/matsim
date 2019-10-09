@@ -559,6 +559,21 @@ public class TripStructureUtils {
 	public static void setRoutingMode(Leg leg, String mode) {
 		leg.getAttributes().putAttribute("routingMode", mode);
 	}
+	
+	public static MainModeIdentifier getMainModeIdentifier() {
+		return new MainModeIdentifier() {
+			
+			@Override
+			public String identifyMainMode(List<? extends PlanElement> tripElements) {
+				return identifyMainMode(tripElements);
+			}
+		};
+	}
+	
+	public static String identifyMainMode( final List<? extends PlanElement> tripElements) {
+		String mode = TripStructureUtils.getRoutingMode(((Leg) tripElements.get( 0 )));	
+		return mode;
+	}
 
 }
 

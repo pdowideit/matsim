@@ -23,6 +23,7 @@ import org.matsim.core.config.groups.GlobalConfigGroup;
 import org.matsim.core.population.algorithms.PlanAlgorithm;
 import org.matsim.core.population.algorithms.TripsToLegsAlgorithm;
 import org.matsim.core.router.TripRouter;
+import org.matsim.core.router.TripStructureUtils;
 
 import javax.inject.Provider;
 
@@ -51,7 +52,7 @@ public class TripsToLegsModule extends AbstractMultithreadedModule {
 		TripRouter router = tripRouterProvider.get();
 
 		return new TripsToLegsAlgorithm( 
-				router.getMainModeIdentifier() );
+				TripStructureUtils.getMainModeIdentifier() );
 	}
 }
 
