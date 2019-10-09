@@ -565,7 +565,7 @@ public class TripStructureUtils {
 			
 			@Override
 			public String identifyMainMode(List<? extends PlanElement> tripElements) {
-				return identifyMainMode(tripElements);
+				return TripStructureUtils.identifyMainMode(tripElements);
 			}
 		};
 	}
