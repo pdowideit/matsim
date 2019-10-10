@@ -140,10 +140,6 @@ public final class PersonPrepareForSim extends AbstractPersonAlgorithm {
 					String routingMode = null;
 					
 					for (Leg leg : legs) {
-						if (leg.getMode().equals("transit_walk")) {
-							leg.setMode(TransportMode.non_network_walk);
-						}
-						
 						// for backward compatibility: add routingMode to legs if not present			
 						if (TripStructureUtils.getRoutingMode(leg) == null) {
 							if (routingMode == null) {
@@ -179,6 +175,20 @@ public final class PersonPrepareForSim extends AbstractPersonAlgorithm {
 					// access_walk and egress_walk were replaced by non_network_walk
 					if (leg.getMode().equals("access_walk") || leg.getMode().equals("egress_walk")) {
 						leg.setMode(TransportMode.non_network_walk);
+					}
+					
+					// transit_walk was replaced by walk + leg attribute routingMode 
+					// TODO: The same for other pt modes? How can those be identified if in they ended up as transit_walk
+					if (leg.getMode().equals(TransportMode.transit_walk)) {
+						leg.setMode(TransportMode.walk);
+						TripStructureUtils.setRoutingMode(leg, TransportMode.pt);
+					}
+					
+					// replace drt_walk etc.
+					if (leg.getMode().endsWith("_walk") && !leg.getMode().equals(TransportMode.non_network_walk)) {
+						leg.setMode(TransportMode.walk);
+						String mode = leg.getMode().substring(0, leg.getMode().length() - 5);
+						TripStructureUtils.setRoutingMode(leg, mode);
 					}
 					
 					if (leg.getRoute() == null) {
