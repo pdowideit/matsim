@@ -106,28 +106,4 @@ public class DefaultDrtRouteUpdater implements ShutdownListener, DrtRouteUpdater
 		executorService.shutdown();
 	}
 
-	public static class DefaultDrtRouteUpdaterProvider extends ModalProviders.AbstractProvider<DrtRouteUpdater> {
-		@Inject
-		@Named(DvrpTravelTimeModule.DVRP_ESTIMATED)
-		private TravelTime travelTime;
-
-		@Inject
-		private Population population;
-
-		@Inject
-		private Config config;
-		private DrtConfigGroup drtCfg;
-
-		public DefaultDrtRouteUpdaterProvider( final DrtConfigGroup drtCfg ) {
-			super( drtCfg.getMode() );
-			this.drtCfg = drtCfg;
-		}
-
-		@Override
-		public DefaultDrtRouteUpdater get() {
-			Network network = getModalInstance(Network.class);
-			return new DefaultDrtRouteUpdater( drtCfg, network, travelTime,
-					getModalInstance( TravelDisutilityFactory.class), population, config);
-		}
-	}
 }

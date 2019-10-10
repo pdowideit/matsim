@@ -45,8 +45,8 @@ public class ClosestAccessEgressStopFinder implements AccessEgressStopFinder {
 	private final Network network;
 	private final Map<Id<TransitStopFacility>, TransitStopFacility> stops;
 
-	private ClosestAccessEgressStopFinder( TransitSchedule transitSchedule, DrtConfigGroup drtconfig,
-							   PlansCalcRouteConfigGroup planscCalcRouteCfg, Network network ) {
+	ClosestAccessEgressStopFinder( TransitSchedule transitSchedule, DrtConfigGroup drtconfig,
+						 PlansCalcRouteConfigGroup planscCalcRouteCfg, Network network ) {
 		this.network = network;
 		this.stops = transitSchedule.getFacilities();
 	}
@@ -73,19 +73,4 @@ public class ClosestAccessEgressStopFinder implements AccessEgressStopFinder {
 		return closest;
 	}
 
-	public static class Provider extends ModalProviders.AbstractProvider<AccessEgressStopFinder> {
-		@Inject PlansCalcRouteConfigGroup plansCalcRouteConfig ;
-		@Inject Network network ;
-		private DrtConfigGroup drtCfg;
-
-		public Provider( final DrtConfigGroup drtCfg ) {
-			super( drtCfg.getMode() );
-			this.drtCfg = drtCfg ;
-		}
-
-		@Override
-		public ClosestAccessEgressStopFinder get() {
-			return new ClosestAccessEgressStopFinder(  getModalInstance( TransitSchedule.class ), drtCfg, plansCalcRouteConfig, network ) ;
-		}
-	}
 }

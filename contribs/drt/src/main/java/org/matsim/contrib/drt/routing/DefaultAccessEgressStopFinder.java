@@ -155,34 +155,4 @@ public class DefaultAccessEgressStopFinder implements AccessEgressStopFinder {
 		return vector;
 	}
 
-	public static class DefaultAccessEgressStopFinderBuilder extends ModalProviders.AbstractProvider {
-		@Inject private TransitSchedule transitSchedule;
-		private DrtConfigGroup drtConfig;
-		@Inject private PlansCalcRouteConfigGroup plansCalcRouteCfg;
-		@Inject private Network network;
-
-		public DefaultAccessEgressStopFinderBuilder( final DrtConfigGroup drtConfig ) {
-			super( drtConfig.getMode() );
-			this.drtConfig = drtConfig ;
-		}
-
-		@Override public DefaultAccessEgressStopFinder get() {
-			return new DefaultAccessEgressStopFinder( transitSchedule, drtConfig, plansCalcRouteCfg, network );
-		}
-		
-		public DefaultAccessEgressStopFinderBuilder setTransitSchedule(TransitSchedule transitSchedule) {
-			this.transitSchedule = transitSchedule;
-			return this;
-		}
-		
-		public DefaultAccessEgressStopFinderBuilder setPlansCalcRouteConfigGroup(PlansCalcRouteConfigGroup plansCalcRouteCfg) {
-			this.plansCalcRouteCfg = plansCalcRouteCfg;
-			return this;
-		}
-		
-		public DefaultAccessEgressStopFinderBuilder setNetwork(Network network) {
-			this.network = network;
-			return this;
-		}
-	}
 }

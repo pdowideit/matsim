@@ -33,12 +33,13 @@ import org.matsim.api.core.v01.network.Network;
 import org.matsim.contrib.drt.optimizer.rebalancing.NoRebalancingStrategy;
 import org.matsim.contrib.drt.optimizer.rebalancing.RebalancingStrategy;
 import org.matsim.contrib.drt.optimizer.rebalancing.mincostflow.DrtModeMinCostFlowRebalancingModule;
-import org.matsim.contrib.drt.routing.ClosestAccessEgressStopFinder;
-import org.matsim.contrib.drt.routing.DefaultDrtRouteUpdater;
+import org.matsim.contrib.drt.routing.ClosestAccessEgressTopFinderProvider;
+import org.matsim.contrib.drt.routing.DefaultDrtRouteUpdaterProvider;
 import org.matsim.contrib.drt.routing.DrtRouteUpdater;
 import org.matsim.contrib.drt.routing.DrtRoutingModule;
-import org.matsim.contrib.drt.routing.StopBasedDrtRoutingModule;
+import org.matsim.contrib.drt.routing.DrtRoutingModuleProvider;
 import org.matsim.contrib.drt.routing.StopBasedDrtRoutingModule.AccessEgressStopFinder;
+import org.matsim.contrib.drt.routing.StopBasedDrtRoutingModuleProvider;
 import org.matsim.contrib.dvrp.fleet.FleetModule;
 import org.matsim.contrib.dvrp.router.DvrpRoutingNetworkProvider;
 import org.matsim.contrib.dvrp.router.TimeAsTravelDisutility;
@@ -83,7 +84,7 @@ public final class DrtModeModule extends AbstractDvrpModeModule {
 
 		switch (drtCfg.getOperationalScheme()) {
 			case door2door:
-				addRoutingModuleBinding(getMode()).toProvider(new DrtRoutingModule.Provider(drtCfg));//not singleton
+				addRoutingModuleBinding(getMode()).toProvider(new DrtRoutingModuleProvider(drtCfg));//not singleton
 				break;
 
 			case serviceAreaBased:
@@ -94,11 +95,11 @@ public final class DrtModeModule extends AbstractDvrpModeModule {
 				} else {
 					bindModal(TransitSchedule.class).toInstance(readTransitSchedule());
 				}
-				bindModal(DrtRoutingModule.class).toProvider(new DrtRoutingModule.Provider(drtCfg));//not singleton
+				bindModal(DrtRoutingModule.class).toProvider(new DrtRoutingModuleProvider(drtCfg));//not singleton
 				
-				addRoutingModuleBinding(getMode()).toProvider( new StopBasedDrtRoutingModule.Provider( drtCfg) );//not singleton
+				addRoutingModuleBinding(getMode()).toProvider( new StopBasedDrtRoutingModuleProvider( drtCfg) );//not singleton
 
-				bindModal(AccessEgressStopFinder.class).toProvider( new ClosestAccessEgressStopFinder.Provider( drtCfg ) ).asEagerSingleton();
+				bindModal(AccessEgressStopFinder.class).toProvider( new ClosestAccessEgressTopFinderProvider( drtCfg ) ).asEagerSingleton();
 
 				break;
 
@@ -106,7 +107,7 @@ public final class DrtModeModule extends AbstractDvrpModeModule {
 				throw new IllegalStateException();
 		}
 
-		bindModal(DrtRouteUpdater.class).toProvider( new DefaultDrtRouteUpdater.DefaultDrtRouteUpdaterProvider( drtCfg ) ).asEagerSingleton();
+		bindModal(DrtRouteUpdater.class).toProvider( new DefaultDrtRouteUpdaterProvider( drtCfg ) ).asEagerSingleton();
 
 		addControlerListenerBinding().to(modalKey(DrtRouteUpdater.class));
 	}

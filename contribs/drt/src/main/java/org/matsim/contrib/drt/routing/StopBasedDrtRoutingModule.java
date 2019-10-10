@@ -194,26 +194,4 @@ public class StopBasedDrtRoutingModule implements RoutingModule {
 		return coord;
 	}
 
-	public static class Provider extends ModalProviders.AbstractProvider<StopBasedDrtRoutingModule> {
-		private final DrtConfigGroup drtCfg ;
-		@Inject private Scenario scenario ;
-		@Inject @Named(TransportMode.walk) private RoutingModule walkRouter ;
-
-		public Provider( final DrtConfigGroup drtCfg ) {
-			super( drtCfg.getMode() );
-			this.drtCfg = drtCfg ;
-		}
-
-		@Override
-		public StopBasedDrtRoutingModule get() {
-			return  new StopBasedDrtRoutingModule(
-					getModalInstance( DrtRoutingModule.class ),
-					walkRouter,
-					getModalInstance( AccessEgressStopFinder.class ),
-					drtCfg,
-					scenario,
-					getModalInstance( Network.class )
-			) ;
-		}
-	}
 }
