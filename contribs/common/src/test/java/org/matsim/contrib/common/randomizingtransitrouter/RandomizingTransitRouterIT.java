@@ -148,8 +148,8 @@ public class RandomizingTransitRouterIT {
 		// distribution rather than a biased uniform distribution as is used here.  kai, jul'15
 		
 		Assert.assertEquals(36., observer.getCounts().get( Id.create("1009", Vehicle.class) ), 0.1 );
-		Assert.assertEquals( 8. /*6.*/ , observer.getCounts().get( Id.create("1012", Vehicle.class) ) , 0.1 );
-		Assert.assertEquals(22. /*21.*/, observer.getCounts().get( Id.create("2009", Vehicle.class) ) , 0.1 );
+		Assert.assertEquals( 6. /*8.*/ , observer.getCounts().get( Id.create("1012", Vehicle.class) ) , 0.1 );
+		Assert.assertEquals(21. /*22.*/, observer.getCounts().get( Id.create("2009", Vehicle.class) ) , 0.1 );
 		Assert.assertEquals(36., observer.getCounts().get( Id.create("3009", Vehicle.class) ) , 0.1 );
 		
 		
