@@ -186,8 +186,8 @@ public final class PersonPrepareForSim extends AbstractPersonAlgorithm {
 					
 					// replace drt_walk etc.
 					if (leg.getMode().endsWith("_walk") && !leg.getMode().equals(TransportMode.non_network_walk)) {
-						leg.setMode(TransportMode.walk);
 						String mode = leg.getMode().substring(0, leg.getMode().length() - 5);
+						leg.setMode(TransportMode.walk);
 						TripStructureUtils.setRoutingMode(leg, mode);
 					}
 					
