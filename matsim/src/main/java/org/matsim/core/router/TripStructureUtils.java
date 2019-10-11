@@ -576,7 +576,7 @@ public class TripStructureUtils {
 		// first try the routing mode:
 		String mode = TripStructureUtils.getRoutingMode(((Leg) tripElements.get( 0 )));
 		// else see if trip has only one leg, if so, use that mode (situation after initial demand generation)
-		if ( mode == null || tripElements.size()==1 ) {
+		if ( mode == null && tripElements.size()==1 ) {
 			mode = ((Leg) tripElements.get(0)).getMode() ;
 		}
 		if (mode == null) {
