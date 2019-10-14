@@ -77,6 +77,7 @@ import javax.inject.Provider;
 				}
 			}
 		}
+		throw new RuntimeException( "the above is not consistent with routing mode." ) ;
 	}
 
 	private void replaceTolledCarModeWithCarMode(Plan plan) {
@@ -87,6 +88,7 @@ import javax.inject.Provider;
 				}
 			}
 		}
+		throw new RuntimeException( "the above is not consistent with routing mode." ) ;
 	}
 
 	private double sumNetworkModeCosts(Plan plan) {
