@@ -40,6 +40,8 @@ public final class RoadPricingModule extends AbstractModule {
 			bind(RoadPricingScheme.class).toProvider(RoadPricingSchemeProvider.class).in(Singleton.class);
 		}
 		// also add RoadPricingScheme as ScenarioElement.  yyyy TODO might try to get rid of this; binding it is safer
+		// (My personal preference is actually to have it as scenario element ... since then it can be set before controler is even called.  Which
+		// certainly makes more sense for a clean build sequence.  kai, oct'19)
 		bind(RoadPricingInitializer.class).asEagerSingleton();
 		
 		// add the toll to the routing disutility.  also includes "randomizing":
@@ -47,7 +49,10 @@ public final class RoadPricingModule extends AbstractModule {
 
 		// specific re-routing strategy for area toll:
 		// yyyy TODO could probably combine them somewhat
-		bind(PlansCalcRouteWithTollOrNot.class); // so that ReRouteAreaToll can use it by injection; yy could replace this by traditional constructor call. kai, oct'19
+//		bind(PlansCalcRouteWithTollOrNot.class); // so that ReRouteAreaToll can use it by injection; yy could replace this by traditional constructor
+//		 call. kai, oct'19
+		// done.  kai, oct'19
+		
 		addPlanStrategyBinding("ReRouteAreaToll").toProvider(ReRouteAreaToll.class);
 		addTravelDisutilityFactoryBinding( CAR_WITH_PAYED_AREA_TOLL ).toInstance(new RandomizingTimeDistanceTravelDisutilityFactory(TransportMode.car, getConfig().planCalcScore()) );
 		addRoutingModuleBinding( CAR_WITH_PAYED_AREA_TOLL ).toProvider(new RoadPricingNetworkRouting() );

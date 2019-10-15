@@ -44,10 +44,10 @@ import javax.inject.Provider;
 	 private final PlanRouter planRouter ;
 
 	@Inject
-	PlansCalcRouteWithTollOrNot(RoadPricingScheme roadPricingScheme, Provider<TripRouter> tripRouterFactory) {
+	PlansCalcRouteWithTollOrNot(RoadPricingScheme roadPricingScheme, Provider<TripRouter> tripRouterProvider) {
 		this.roadPricingScheme = roadPricingScheme;
-//		this.tripRouterFactory = tripRouterFactory;
-		this.planRouter = new PlanRouter( tripRouterFactory.get() ) ;
+//		this.tripRouterProvider = tripRouterProvider;
+		this.planRouter = new PlanRouter( tripRouterProvider.get() ) ;
 	}
 
 	@Override
