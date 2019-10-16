@@ -22,7 +22,14 @@ steps:
     goals: 'package'
     options: '-DskipTests'
 
-- task: PublishPipelineArtifact@1
+- task: CopyFiles@2
+  displayName: Copy Files
   inputs:
-    targetPath: '$(Pipeline.Workspace)'
-    artifact: 'MATSimDrop'
+    SourceFolder: $(system.defaultworkingdirectory)
+    Contents: '**/*.jar'
+    TargetFolder: $(build.artifactstagingdirectory)   
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Artifact
+  inputs:
+    PathtoPublish: $(build.artifactstagingdirectory)
